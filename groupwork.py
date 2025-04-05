@@ -13,9 +13,7 @@ from firebase_admin import credentials
 REGISTER, INTERESTS = range(2)
 
 # Initialize Firebase
-cred = credentials.Certificate("chatbot-13193-firebase-adminsdk-fbsvc-4dbcf1764a.json")
-firebase_admin.initialize_app(cred)
-# cred = credentials.Certificate("chatbot-13193-firebase-adminsdk-fbsvc-78f686cf53.json")  
+cred = credentials.Certificate("chatbot-13193-firebase-adminsdk-fbsvc-e8980c37ce.json") 
 # current_dir = os.path.dirname(__file__)
 # cred = credentials.Certificate(os.path.join(current_dir, 'chatbot-13193-firebase-adminsdk-fbsvc-78f686cf53.json'))
 
