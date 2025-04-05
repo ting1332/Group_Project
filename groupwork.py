@@ -6,12 +6,18 @@ import logging
 import firebase_admin
 from firebase_admin import credentials, firestore
 from ChatGPT_HKBU import HKBU_ChatGPT
+from firebase_admin import credentials
+
 
 # Defining state constants
 REGISTER, INTERESTS = range(2)
 
 # Initialize Firebase
-cred = credentials.Certificate("chatbot-13193-firebase-adminsdk-fbsvc-78f686cf53.json")  
+cred = credentials.Certificate("chatbot-13193-firebase-adminsdk-fbsvc-4dbcf1764a.json")
+firebase_admin.initialize_app(cred)
+# cred = credentials.Certificate("chatbot-13193-firebase-adminsdk-fbsvc-78f686cf53.json")  
+# current_dir = os.path.dirname(__file__)
+# cred = credentials.Certificate(os.path.join(current_dir, 'chatbot-13193-firebase-adminsdk-fbsvc-78f686cf53.json'))
 
 # Check if the Firebase app has been initialized
 if not firebase_admin._apps:
@@ -126,6 +132,7 @@ def main():
 
     chatgpt_handler = MessageHandler(Filters.text & (~Filters.command), equiped_chatgpt)
     dispatcher.add_handler(chatgpt_handler)
+    
     # To start the bot:
     updater.start_polling()
     updater.idle()
