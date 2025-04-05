@@ -11,7 +11,7 @@ from ChatGPT_HKBU import HKBU_ChatGPT
 REGISTER, INTERESTS = range(2)
 
 # Initialize Firebase
-cred = credentials.Certificate("chatbot-13193-firebase-adminsdk-fbsvc-7ff2b0bca0.json")  
+cred = credentials.Certificate("chatbot-13193-firebase-adminsdk-fbsvc-78f686cf53.json")  
 
 # Check if the Firebase app has been initialized
 if not firebase_admin._apps:
