@@ -62,12 +62,19 @@ def save_interests(update: Update, context: CallbackContext):
     interests = update.message.text.split(",")
     interests = [interest.strip() for interest in interests]
     
+    logging.info(f"User ID: {user_id}, Interests: {interests}")  # 记录用户ID和兴趣
+
     # Storing user interests in Firestore
-    user_ref = db.collection('users').document(str(user_id))
-    user_ref.set({'interests': interests})
+    try:
+        user_ref = db.collection('users').document(str(user_id))
+        user_ref.set({'interests': interests})
+        update.message.reply_text("Your interest has been registered successfully! You can find people with same interests as you by using /find_matches command")
+    except Exception as e:
+        logging.error(f"Failed to save interests to Firestore: {e}")
+        update.message.reply_text("There was an error saving your interests. Please try again later.")
     
-    update.message.reply_text("Your interest has been registered successfully! You can find people with same interests as you by using /find_matches command")
     return ConversationHandler.END
+
 
 def find_matches(update: Update, context: CallbackContext):
     """Find matching users from Firestore"""
