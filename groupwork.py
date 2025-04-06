@@ -14,7 +14,7 @@ REGISTER, INTERESTS = range(2)
 
 # Set up logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 # Initialize Firebase
 try:
