@@ -7,6 +7,7 @@ import configparser
 import firebase_admin
 from firebase_admin import credentials, firestore
 from ChatGPT_HKBU import HKBU_ChatGPT
+import json
 
 REGISTER, INTERESTS = range(2)
 
@@ -17,6 +18,8 @@ logging.basicConfig(level=logging.INFO)
 try:
     # 从环境变量中获取服务账户密钥
     google_credentials = os.getenv('GOOGLE_CREDENTIALS')
+
+    logging.info("siyao:%s",google_credentials)
     
     if not google_credentials:
         raise ValueError("Google credentials environment variable is not set.")
