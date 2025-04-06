@@ -1,25 +1,35 @@
+import os
 import logging
 import telegram
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
 import configparser
-import logging
 import firebase_admin
 from firebase_admin import credentials, firestore
 from ChatGPT_HKBU import HKBU_ChatGPT
-from firebase_admin import credentials
-import os
 
 REGISTER, INTERESTS = range(2)
+
 # Set up logging
 logging.basicConfig(level=logging.INFO)
-if not os.path.exists("chatbot-13193-firebase-adminsdk-fbsvc-e36b24e648.json"):
-         print("Key file does not exists!")
+
 # Initialize Firebase
 try:
-    cred = credentials.Certificate("chatbot-13193-firebase-adminsdk-fbsvc-e36b24e648.json")
+    # 从环境变量中获取服务账户密钥
+    google_credentials = os.getenv('GOOGLE_CREDENTIALS')
+    
+    if not google_credentials:
+        raise ValueError("Google credentials environment variable is not set.")
+    
+    # 将 JSON 字符串解析为字典
+    cred_info = json.loads(google_credentials)
+    
+    # 使用从环境变量中获取的凭据初始化 Firebase
+    cred = credentials.Certificate(cred_info)
+    
     if not firebase_admin._apps:
         firebase_admin.initialize_app(cred)
+    
     db = firestore.client()
     logging.info("Firebase initialized successfully.")
 except Exception as e:
@@ -28,14 +38,14 @@ except Exception as e:
 def start(update: Update, context: CallbackContext):
     """Start command, welcome the user and guide registration interest"""
     update.message.reply_text(
-    "Welcome to the interest matching chatbot!\n"
-    "You can register your interests with the /register command, including:\n"
-    "- Online games\n"
-    "- VR experiences\n"
-    "- Social media groups\n"
-    "- Music\n"
-    "- Dancing\n"
-    "Then I'll help you find people with similar interests!"
+        "Welcome to the interest matching chatbot!\n"
+        "You can register your interests with the /register command, including:\n"
+        "- Online games\n"
+        "- VR experiences\n"
+        "- Social media groups\n"
+        "- Music\n"
+        "- Dancing\n"
+        "Then I'll help you find people with similar interests!"
     )
 
 def register(update: Update, context: CallbackContext):
@@ -56,7 +66,7 @@ def save_interests(update: Update, context: CallbackContext):
     user_ref = db.collection('users').document(str(user_id))
     user_ref.set({'interests': interests})
     
-    update.message.reply_text("Your interest has been registered successfully!You can find people with same interests as you by using /find_matches command")
+    update.message.reply_text("Your interest has been registered successfully! You can find people with same interests as you by using /find_matches command")
     return ConversationHandler.END
 
 def find_matches(update: Update, context: CallbackContext):
@@ -93,8 +103,7 @@ def find_matches(update: Update, context: CallbackContext):
         response = "Sorry, we currently cannot find users who share your interests."
     update.message.reply_text(response)
 
-
-def equiped_chatgpt(update,context):
+def equiped_chatgpt(update, context):
     global chatgpt
     user_message = update.message.text
     if "match users with similar interests" in user_message:
