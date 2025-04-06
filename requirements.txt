@@ -1,4 +1,4 @@
 python-telegram-bot==13.7
-firebase-admin==5.2.0
+firebase-admin==6.7.0
 configparser==5.3.0
 

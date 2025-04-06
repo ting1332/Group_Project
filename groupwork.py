@@ -1,3 +1,4 @@
+import logging
 import telegram
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
@@ -7,20 +8,22 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from ChatGPT_HKBU import HKBU_ChatGPT
 from firebase_admin import credentials
+import os
 
-
-# Defining state constants
 REGISTER, INTERESTS = range(2)
-
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+if not os.path.exists("chatbot-13193-firebase-adminsdk-fbsvc-e36b24e648.json"):
+         print("Key file does not exists!")
 # Initialize Firebase
-cred = credentials.Certificate("chatbot-13193-firebase-adminsdk-fbsvc-e8980c37ce.json") 
-# current_dir = os.path.dirname(__file__)
-# cred = credentials.Certificate(os.path.join(current_dir, 'chatbot-13193-firebase-adminsdk-fbsvc-78f686cf53.json'))
-
-# Check if the Firebase app has been initialized
-if not firebase_admin._apps:
-    firebase_admin.initialize_app(cred)
-db = firestore.client()
+try:
+    cred = credentials.Certificate("chatbot-13193-firebase-adminsdk-fbsvc-e36b24e648.json")
+    if not firebase_admin._apps:
+        firebase_admin.initialize_app(cred)
+    db = firestore.client()
+    logging.info("Firebase initialized successfully.")
+except Exception as e:
+    logging.error(f"Failed to initialize Firebase: {e}")
 
 def start(update: Update, context: CallbackContext):
     """Start command, welcome the user and guide registration interest"""
