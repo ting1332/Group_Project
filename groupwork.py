@@ -13,23 +13,14 @@ import json
 REGISTER, INTERESTS = range(2)
 
 # Set up logging
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
-# 创建一个 StreamHandler 并设置日志级别
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-
-# 创建一个格式化器并将其添加到处理器
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
-
-# 将处理器添加到日志记录器
-logger.addHandler(ch)
+logging.basicConfig(level=logging.DEBUG)
 
 # Initialize Firebase
 try:
     encoded_private_key = os.getenv('FIREBASE_KEY')
+    
+logging.debug("siyao:%s", encoded_private_key)
 
 # 解码 Base64 字符串
     decoded_private_key = base64.b64decode(encoded_private_key).decode('utf-8')
