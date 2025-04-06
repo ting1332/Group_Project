@@ -1,4 +1,5 @@
 import os
+import base64
 import logging
 import telegram
 from telegram import Update
@@ -12,7 +13,6 @@ import json
 REGISTER, INTERESTS = range(2)
 
 # Set up logging
-# logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -26,29 +26,18 @@ ch.setFormatter(formatter)
 
 # 将处理器添加到日志记录器
 logger.addHandler(ch)
+
 # Initialize Firebase
 try:
-     firebase_key={
-  "type": "service_account",
-  "project_id": "chatbot-13193",
-  "private_key_id": "338ab1ce64cf193064cdc0a5f04c2798fcb66d95",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDEVtAOgf08/huC\nT3gfdXwjq5Nkbr5yzuy2uBF/vkI/SIi6V+9RQElKMgRXXIYWEl2n6XVey5mNBpmq\nrV7aSD/goknnqVFJA8+Nr7KIwz0zYgipbai8XiNHg99eAT44uBoXcR6XQmBb8beh\nTNwKOoqrl0QiLlQLa5dzAx+Api7pLzmwJronG3/PU+X5DefxlY6n59C0fCdRAKYf\nl5/ET9lPn3CzZOUXQo+ZvSOIwoEZPuWJ5VUdnIvQIjNTsnJamsSF0qmFXXt2IaJR\n/Yw0BGubS4H5yTSerJ6hmQRfxmydl2hQnznvRqC8FNfumVsdH+Pd2yZic3geXGtj\nqAKbHFJ/AgMBAAECggEABYqUXq8ehZfVEO117Mq1ETtTcp80MtX86lScRyhd2Elk\nyoBBhIqK8al4Y+V8R1KHYCjU+N2dh38V29z+yKxcroCwvfVnvObQTHsWpTOAHlt4\nS8feM6AjNhkrtwx+mWfgx06YWBk10lfVIJv5uImEcRQDhpobdyMMkuDAr9yA2xs/\nHgNEHoJVeJoPG11f7O2W0E5Cxz6ZdiH7yBDzSI8GByreBg27APJFwidearyXBEOg\nf5kDp54wNLiQgQ8EQp2u47PgxS22vaISmAv6fy5y5OJ4YTxe22O+34K/b3jrwzSj\nNfA1X4qAH6O5aGU8B2JpaUpiDSt868ZZ1I59ZvXe2QKBgQDlWL30/rwmFtxzNJFg\nVu9nYFGUKpLrqYLPgW+txTN3k5c0XC79gP3TD2zxg4jD1e2SD/1WWjq13wot55ON\nAD2PG6jDXD43cqrBDi03iNcbCx3bifU+aHp/+0ww6WFWeQuo53J1yyKAKqa4YfsO\nb+ielvtRm039F/76FjazoLsl1QKBgQDbKBGC/GPIOLFu+NQZTQacMuiHWE92JMb5\nKmVNRbNAoTJIq2TQv8BTS3Xmh6WLIpC/ZlIF9wdAhl7aPx0ZQkotbRoxrMTadMAQ\nWgR6zLlqHyUIVCK/HT70cn9Zxob2eh20oMFGpN+p+7LnM9vsK4RjuHxdNpQk/nA6\nUrQpuzrdAwKBgQDgjWXXxb4kMQgBSHv6bsQSXG0jfBfD44FveFUHN+ivcHOAUa20\niaJ8D0NkqJu02vWzqDIsZUXMoqfN0EpYqN6dCsDPHrbQBVaIlT/SewnZsaW3OTlE\ntHkUa9DqpuamCvhOlOYtzQlnodsA9vYf6ZRCCqPhAAV5BBCjfjJq57m1TQKBgQCG\nAS0cA8nbntbXvSyrv85/6h0GzTfhTMGhj4vbwPfHWAmQJ8UAY49tHyIbcOwHdH4/\nmogi/5aenMsY9iiLzl3fAuxWXYcM8QCTvwcoM1BYlGyneBK6+14ISI6YTW0u/yJ0\n1Sr5UE02+iG9f5dFBKLx+teIg5v4NuBWuUVSkxp+EwKBgQDJAYdjok+aNEd2XUIs\n5ouHB2AXKg3XujPUBavRGd8aMrV6bedIB8j+T9rpz48Bo6MskWBUdhfSoWfHphs0\nV2JHQxLgA53pFRXP/Hw0A7Fge8XHkjpBodQTw4oGrNvvswkYiQ+FCt/F1RMoXIJn\n18GKo8/FsPvxHqGyevkvnnuImw==\n-----END PRIVATE KEY-----\n",
-  "client_email": "firebase-adminsdk-fbsvc@chatbot-13193.iam.gserviceaccount.com",
-  "client_id": "100976884821452095368",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40chatbot-13193.iam.gserviceaccount.com",
-  "universe_domain": "googleapis.com"
-}
+    encoded_private_key = os.getenv('FIREBASE_KEY')
 
-    # 使用从环境变量中获取的凭据初始化 Firebase
-    try:
-        cred = credentials.Certificate(firebase_key)
-    except Exception as e:
-        logging.error("Failed to create credentials from provided info: %s", e)
-        raise
+# 解码 Base64 字符串
+    decoded_private_key = base64.b64decode(encoded_private_key).decode('utf-8')
 
+# 将解码后的私钥转换为字典
+    config = json.loads(decoded_private_key)
+    # 初始化 Firebase Admin SDK
+    cred = credentials.Certificate(config)
     if not firebase_admin._apps:
         firebase_admin.initialize_app(cred)
 
