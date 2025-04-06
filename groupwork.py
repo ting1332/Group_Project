@@ -18,23 +18,34 @@ logging.basicConfig(level=logging.INFO)
 try:
     # 从环境变量中获取服务账户密钥
     google_credentials = os.getenv('GOOGLE_CREDENTIALS')
-
-    logging.info("siyao:%s",google_credentials)
     
+    logging.info("Google Credentials: %s", google_credentials)  # 调试日志
+
     if not google_credentials:
         raise ValueError("Google credentials environment variable is not set.")
-    
+
     # 将 JSON 字符串解析为字典
-    cred_info = json.loads(google_credentials)
-    
+    try:
+        cred_info = json.loads(google_credentials)
+    except json.JSONDecodeError as je:
+        logging.error("Failed to decode JSON from Google credentials: %s", je)
+        raise
+
     # 使用从环境变量中获取的凭据初始化 Firebase
-    cred = credentials.Certificate(cred_info)
-    
+    try:
+        cred = credentials.Certificate(cred_info)
+    except Exception as e:
+        logging.error("Failed to create credentials from provided info: %s", e)
+        raise
+
     if not firebase_admin._apps:
         firebase_admin.initialize_app(cred)
-    
+
     db = firestore.client()
     logging.info("Firebase initialized successfully.")
+
+except ValueError as ve:
+    logging.error(f"ValueError: {ve}")
 except Exception as e:
     logging.error(f"Failed to initialize Firebase: {e}")
 
