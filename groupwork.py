@@ -12,8 +12,20 @@ import json
 REGISTER, INTERESTS = range(2)
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
+# 创建一个 StreamHandler 并设置日志级别
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+# 创建一个格式化器并将其添加到处理器
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+
+# 将处理器添加到日志记录器
+logger.addHandler(ch)
 # Initialize Firebase
 try:
     # 从环境变量中获取服务账户密钥
